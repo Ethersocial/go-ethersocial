@@ -30,6 +30,22 @@ var MainnetBootnodes = []string{
 	"enode://979b7fa28feeb35a4741660a16076f1943202cb72b6af70d327f053e248bab9ba81760f39d0701ef1d8f89cc1fbd2cacba0710a12cd5314d5e0c9021aa3637f9@5.1.83.226:30303", // DE
 }
 
+// The main Ethersocial network.
+var EthersocialBootnodes = []string{
+	// Ethersocial Go Bootnodes
+	"enode://6dcb79d9a9f978521a7edf53a50484f0595e14aa08575f0e71099a009ce2dbf40ef9b2dada99e3c78782f1300c1f6726c3d5acefa02730e1c8fe3c1a5301d8d8@52.231.75.3:50501",    // Asia-01
+	"enode://e1d30788711266f699bf95f0392120ec620086d4eeabfd7e92e65a996ecd116cb9331ee3623aab88f498fb28bc302ac827cd3dc71f2db3c134e726eb23944af6@23.100.101.195:50501", // Asia-02
+	"enode://f2c298eee215cefa930b5280e665a38b2706be3120c302b9fcb48dc7d3ceba3a3e7bac354dccbbcbc3bfd177882b0d5498f36833dfcd5674225adb19dd04ec3a@52.231.74.146:50505",  // KR1
+	"enode://7769cf0bdb7edd8dd95e590b46f950b9bd9625d681ec6123b31d3be58f1f1e0531d9811ccd9c1ad5d52a73999c6da2131943ca02666e238b1f265a1cc64dcae7@52.231.35.75:50505",   // KR2
+	"enode://52e5e84d44bbda7e24a92826e60dfeb20a5d840c3c0be646b21940d7648f49a91bff2b7c47d37894b962eb183d8c7f71f693efb8534ee170ccd902addd487970@52.226.16.248:50505",  // us-east
+}
+
+// SkynetBootnodes are the enode URLs of the P2P bootstrap nodes running on the
+// Skynet test network.
+var SkynetBootnodes = []string{
+	"enode://eece4a79e9dfa3e61209b006d97334f9310178de8efd0832f76372ab98abcc7d28ec050a1b43f03c3c5837fb4eb29e32f549f9afca38f10014d62f93de35ca45@52.170.148.239:50505",
+}
+
 // TestnetBootnodes are the enode URLs of the P2P bootstrap nodes running on the
 // Ropsten test network.
 var TestnetBootnodes = []string{
