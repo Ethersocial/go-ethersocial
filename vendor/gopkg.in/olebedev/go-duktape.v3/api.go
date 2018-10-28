@@ -973,7 +973,7 @@ func (d *Context) PushBuffer(size int, dynamic bool) unsafe.Pointer {
 }
 
 // See: http://duktape.org/api.html#duk_push_c_function
-func (d *Context) PushCFunction(fn *[0]byte, nargs int64) int {
+func (d *Context) PushCFunction(fn *[0]byte, nargs uint64) int {
 	return int(C.duk_push_c_function(d.duk_context, fn, C.duk_idx_t(nargs)))
 }
 
