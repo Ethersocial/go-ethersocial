@@ -21,10 +21,10 @@ import (
 	"hash"
 	"strconv"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/swarm/storage/feed/lookup"
+	"github.com/ethersocial/go-ethersocial/common"
+	"github.com/ethersocial/go-ethersocial/swarm/storage/feed/lookup"
 
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/ethersocial/go-ethersocial/swarm/storage"
 )
 
 // ID uniquely identifies an update on the network.

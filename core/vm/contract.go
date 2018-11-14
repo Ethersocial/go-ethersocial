@@ -19,7 +19,7 @@ package vm
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethersocial/go-ethersocial/common"
 )
 
 // ContractRef is a reference to the contract's backing object

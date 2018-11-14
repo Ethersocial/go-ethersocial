@@ -24,12 +24,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/p2p"
-	"github.com/ethereum/go-ethereum/p2p/discover"
-	"github.com/ethereum/go-ethereum/p2p/simulations"
-	"github.com/ethereum/go-ethereum/swarm/log"
-	"github.com/ethereum/go-ethereum/swarm/network/simulation"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/ethersocial/go-ethersocial/p2p"
+	"github.com/ethersocial/go-ethersocial/p2p/discover"
+	"github.com/ethersocial/go-ethersocial/p2p/simulations"
+	"github.com/ethersocial/go-ethersocial/swarm/log"
+	"github.com/ethersocial/go-ethersocial/swarm/network/simulation"
+	"github.com/ethersocial/go-ethersocial/swarm/storage"
 )
 
 /*

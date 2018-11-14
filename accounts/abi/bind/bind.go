@@ -29,7 +29,7 @@ import (
 	"text/template"
 	"unicode"
 
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethersocial/go-ethersocial/accounts/abi"
 )
 
 // Lang is a target programming language selector to generate bindings for.
