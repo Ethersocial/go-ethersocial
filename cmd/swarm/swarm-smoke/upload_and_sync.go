@@ -32,7 +32,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethersocial/go-ethersocial/log"
 	colorable "github.com/mattn/go-colorable"
 	"github.com/pborman/uuid"
 
