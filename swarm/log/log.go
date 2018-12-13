@@ -1,8 +1,8 @@
 package log
 
 import (
-	l "github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
+	l "github.com/ethersocial/go-ethersocial/log"
+	"github.com/ethersocial/go-ethersocial/metrics"
 )
 
 const (

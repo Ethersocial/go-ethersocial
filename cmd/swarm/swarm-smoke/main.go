@@ -21,13 +21,13 @@ import (
 	"os"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/cmd/utils"
-	gethmetrics "github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/metrics/influxdb"
-	swarmmetrics "github.com/ethereum/go-ethereum/swarm/metrics"
-	"github.com/ethereum/go-ethereum/swarm/tracing"
+	"github.com/ethersocial/go-ethersocial/cmd/utils"
+	gethmetrics "github.com/ethersocial/go-ethersocial/metrics"
+	"github.com/ethersocial/go-ethersocial/metrics/influxdb"
+	swarmmetrics "github.com/ethersocial/go-ethersocial/swarm/metrics"
+	"github.com/ethersocial/go-ethersocial/swarm/tracing"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethersocial/go-ethersocial/log"
 
 	cli "gopkg.in/urfave/cli.v1"
 )
