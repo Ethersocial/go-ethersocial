@@ -52,28 +52,6 @@ matrix:
       script:
         - go run build/ci.go lint
 
-    # This builder does the Ubuntu PPA upload
-    - if: type = push
-      os: linux
-      dist: trusty
-      go: 1.11.x
-      env:
-        - ubuntu-ppa
-      git:
-        submodules: false # avoid cloning ethereum/tests
-      addons:
-        apt:
-          packages:
-            - devscripts
-            - debhelper
-            - dput
-            - fakeroot
-            - python-bzrlib
-            - python-paramiko
-      script:
-        - echo '|1|7SiYPr9xl3uctzovOTj4gMwAC1M=|t6ReES75Bo/PxlOPJ6/GsGbTrM0= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA0aKz5UTUndYgIGG7dQBV+HaeuEZJ2xPHo2DS2iSKvUL4xNMSAY4UguNW+pX56nAQmZKIZZ8MaEvSj6zMEDiq6HFfn5JcTlM80UwlnyKe8B8p7Nk06PPQLrnmQt5fh0HmEcZx+JU9TZsfCHPnX7MNz4ELfZE6cFsclClrKim3BHUIGq//t93DllB+h4O9LHjEUsQ1Sr63irDLSutkLJD6RXchjROXkNirlcNVHH/jwLWR5RcYilNX7S5bIkK8NlWPjsn/8Ua5O7I9/YoE97PpO6i73DTGLh5H9JN/SITwCKBkgSDWUt61uPK3Y11Gty7o2lWsBjhBUm2Y38CBsoGmBw==' >> ~/.ssh/known_hosts
-        - go run build/ci.go debsrc -upload ethereum/ethereum -sftp-user geth-ci -signer "Go Ethereum Linux Builder <geth-ci@ethereum.org>"
-
     # This builder does the Linux Azure uploads
     - if: type = push
       os: linux
@@ -107,6 +85,8 @@ matrix:
         - GOARM=7 go run build/ci.go archive -arch arm -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
         - go run build/ci.go install -arch arm64 -cc aarch64-linux-gnu-gcc
         - go run build/ci.go archive -arch arm64 -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
+        - mkdir -p package
+        - [ $(ls geth-*.gz 2> /dev/null |wc -l) != 0 ] && mv geth-*.tar.gz package
 
     # This builder does the Linux Azure MIPS xgo uploads
     - if: type = push
@@ -135,6 +115,9 @@ matrix:
         - go run build/ci.go xgo --alltools -- --targets=linux/mips64le --ldflags '-extldflags "-static"' -v
         - for bin in build/bin/*-linux-mips64le; do mv -f "${bin}" "${bin/-linux-mips64le/}"; done
         - go run build/ci.go archive -arch mips64le -type tar -signer LINUX_SIGNING_KEY -upload gethstore/builds
+
+        - mkdir -p package
+        - [ $(ls geth-*.gz 2> /dev/null |wc -l) != 0 ] && mv geth-*.tar.gz package
 
     # This builder does the Android Maven and Azure uploads
     - if: type = push
@@ -173,6 +156,8 @@ matrix:
         - mkdir -p $GOPATH/src/github.com/ethersocial
         - ln -s `pwd` $GOPATH/src/github.com/ethersocial
         - go run build/ci.go aar -signer ANDROID_SIGNING_KEY -deploy https://oss.sonatype.org -upload gethstore/builds
+        - mkdir -p package
+        - [ $(ls geth-*.aar 2> /dev/null |wc -l) != 0 ] && mv geth-*.aar package
 
     # This builder does the OSX Azure, iOS CocoaPods and iOS Azure uploads
     - if: type = push
@@ -200,8 +185,11 @@ matrix:
         - xcrun simctl list
 
         # Workaround for https://github.com/golang/go/issues/23749
-        - export CGO_CFLAGS_ALLOW='-fmodules|-fblocks|-fobjc-arc'
-        - go run build/ci.go xcode -signer IOS_SIGNING_KEY -deploy trunk -upload gethstore/builds
+        ##- export CGO_CFLAGS_ALLOW='-fmodules|-fblocks|-fobjc-arc'
+        ##- go run build/ci.go xcode -signer IOS_SIGNING_KEY -deploy trunk -upload gethstore/builds
+
+        - mkdir -p package
+        - [ $(ls geth-*.gz 2> /dev/null |wc -l) != 0 ] && mv geth-*.tar.gz package
 
     # This builder does the Azure archive purges to avoid accumulating junk
     - if: type = cron
@@ -214,3 +202,13 @@ matrix:
         submodules: false # avoid cloning ethereum/tests
       script:
         - go run build/ci.go purge -store gethstore/builds -days 14
+
+deploy:
+  - provider: releases
+    api_key:
+      secure: "LV+5+6KZlwZN+l0/kyXJr1ZcJUhqCdCmlr7KGhE3J30gX/y5xraGoTUlORdKKOpJdjrP8Mh4sTGNhq0cpm4FO1We/N/vy4JP9x4/BE0yVupXMtfgrKlQw6pNJXL/EzscBT+rwkvzDCk7+glyrNfgNK8Jcue9SKEG20NI1RofdLfOTMMj6+gHSKrQ3qMydUGVFFhE+YMy7Amffs9WMkg48Od/GWtX8flFFIhclC809JafgPA0W4c7ATSlkoHEzDAiTE7x4uZWQ0Bn5tQxoLh0PqxhEUsW3GBuh3M3GpgiJoOZinocJxZyOJ4eCYYsAqtQMxrbQoklD6RepxaZ9bVMhIGvNXDMbr/uWx+eVxmEvLMpJgmMBPBZytcOgC/MgfYJDlTqOmz+q7O318JgmCOmbXn6v9rhw7ng6R/jPnGOlhmgsVM+/NKH4bI8jCPAvqstTU8jiI16QyZnmo7/H3RK2sKfsP0B8I3Uh77Gbt+d/T951ogqFOj/7lmLgmchescEVeA25KfslepM9zBOF6Q0yxJr5eGXQqbFuoL9QP4UaVw5285sFnWgBTCitgqa48wtO/bjDXCDThAVugTSnmnMmtrlHYi2eZNUx7Tz5v3Ejtsv97cQKQweW1sB1zwT7sa+RUIqpHbG0UZJICDovC+G1naof1GkZhzfd2cVulHSXwQ="
+    file_glob: true
+    file: package/*
+    skip_cleanup: true
+    on:
+      tags: true
