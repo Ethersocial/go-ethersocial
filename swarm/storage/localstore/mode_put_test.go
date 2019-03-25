@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	"github.com/ethersocial/go-ethersocial/swarm/storage"
 )
 
 // TestModePutRequest validates ModePutRequest index values on the provided DB.

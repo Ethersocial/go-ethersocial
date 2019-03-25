@@ -22,11 +22,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/p2p/simulations/adapters"
-	"github.com/ethereum/go-ethereum/swarm/network"
-	"github.com/ethereum/go-ethereum/swarm/network/simulation"
+	"github.com/ethersocial/go-ethersocial/log"
+	"github.com/ethersocial/go-ethersocial/node"
+	"github.com/ethersocial/go-ethersocial/p2p/simulations/adapters"
+	"github.com/ethersocial/go-ethersocial/swarm/network"
+	"github.com/ethersocial/go-ethersocial/swarm/network/simulation"
 )
 
 // Every node can have a Kademlia associated using the node bucket under

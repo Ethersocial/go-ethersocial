@@ -28,9 +28,9 @@ import (
 	"testing"
 	"time"
 
-	ch "github.com/ethereum/go-ethereum/swarm/chunk"
-	"github.com/ethereum/go-ethereum/swarm/shed"
-	"github.com/ethereum/go-ethereum/swarm/storage"
+	ch "github.com/ethersocial/go-ethersocial/swarm/chunk"
+	"github.com/ethersocial/go-ethersocial/swarm/shed"
+	"github.com/ethersocial/go-ethersocial/swarm/storage"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 

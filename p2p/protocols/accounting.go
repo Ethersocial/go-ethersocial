@@ -19,7 +19,7 @@ package protocols
 import (
 	"time"
 
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/ethersocial/go-ethersocial/metrics"
 )
 
 // define some metrics
