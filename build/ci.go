@@ -70,6 +70,11 @@ var (
 		executablePath("geth"),
 	}
 
+	gesnArchiveFiles = []string{
+		"COPYING",
+		executablePath("gesn"),
+	}
+
 	// Files that end up in the geth-alltools*.zip archive.
 	allToolsArchiveFiles = []string{
 		"COPYING",
@@ -77,6 +82,7 @@ var (
 		executablePath("bootnode"),
 		executablePath("evm"),
 		executablePath("geth"),
+		executablePath("gesn"),
 		executablePath("puppeth"),
 		executablePath("rlpdump"),
 		executablePath("wnode"),
@@ -104,6 +110,10 @@ var (
 		},
 		{
 			BinaryName:  "geth",
+			Description: "Ethereum CLI client.",
+		},
+		{
+			BinaryName:  "gesn",
 			Description: "Ethereum CLI client.",
 		},
 		{
@@ -402,6 +412,7 @@ func doArchive(cmdline []string) {
 
 		basegeth = archiveBasename(*arch, params.ArchiveVersion(env.Commit))
 		geth     = "geth-" + basegeth + ext
+		gesn     = "gesn-" + basegeth + ext
 		alltools = "geth-alltools-" + basegeth + ext
 
 		baseswarm = archiveBasename(*arch, sv.ArchiveVersion(env.Commit))
@@ -409,6 +420,14 @@ func doArchive(cmdline []string) {
 	)
 	maybeSkipArchive(env)
 	if err := build.WriteArchive(geth, gethArchiveFiles); err != nil {
+		log.Fatal(err)
+	}
+	if runtime.GOOS == "windows" {
+		build.MustRunCommand("cmd", "/c", "copy", executablePath("geth"), executablePath("gesn"))
+	} else {
+		build.MustRunCommand("cp", executablePath("geth"), executablePath("gesn"))
+	}
+	if err := build.WriteArchive(gesn, gesnArchiveFiles); err != nil {
 		log.Fatal(err)
 	}
 	if err := build.WriteArchive(alltools, allToolsArchiveFiles); err != nil {
@@ -1025,6 +1044,11 @@ func doXgo(cmdline []string) {
 			if strings.HasPrefix(res, GOBIN) {
 				// Binary tool found, cross build it explicitly
 				args = append(args, "./"+filepath.Join("cmd", filepath.Base(res)))
+				// FIXME
+				if filepath.Base(res) == "gesn" {
+					args = args[:len(args)-1]
+					continue
+				}
 				xgo := xgoTool(args)
 				build.MustRun(xgo)
 				args = args[:len(args)-1]
