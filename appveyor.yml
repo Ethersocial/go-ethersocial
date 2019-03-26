@@ -34,7 +34,27 @@ build_script:
 after_build:
   - go run build\ci.go archive -type zip -signer WINDOWS_SIGNING_KEY -upload gethstore/builds
   - go run build\ci.go nsis -signer WINDOWS_SIGNING_KEY -upload gethstore/builds
+  - mv geth-*.* build\
 
-test_script:
-  - set CGO_ENABLED=1
-  - go run build\ci.go test -coverage
+#test_script:
+#  - set CGO_ENABLED=1
+#  - go run build\ci.go test -coverage
+
+artifacts:
+  - path: build\geth-*.*
+    name: geth
+
+deploy:
+  # Create GitHub release, also set the release name and description.
+  provider: GitHub
+  tag: $(appveyor_repo_tag_name)
+  release: "$(project_name) $(project_version)"
+  description: ""
+  force_update: true  # Force update in case Travis CI created the release before.
+  prerelease: $(project_version_is_prerelease)
+  draft: false
+  artifact: geth
+  auth_token:
+    secure: tlXNusW2nD1WbdbfZirHCOZJTYGyhE03sJpu+qyVPWJ5sE3IcWSJNZdpVT1g+UW1
+  on:
+    appveyor_repo_tag: true
