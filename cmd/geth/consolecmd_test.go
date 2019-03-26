@@ -27,6 +27,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ethersocial/go-ethersocial/node"
 	"github.com/ethersocial/go-ethersocial/params"
 )
 
@@ -53,12 +54,17 @@ func TestConsoleWelcome(t *testing.T) {
 	geth.SetTemplateFunc("gethver", func() string { return params.VersionWithMeta })
 	geth.SetTemplateFunc("niltime", func() string { return time.Unix(0, 0).Format(time.RFC1123) })
 	geth.SetTemplateFunc("apis", func() string { return ipcAPIs })
+	if node.DefaultConfig.UserIdent != "" {
+		geth.SetTemplateFunc("ident", func() string { return "Geth/" + node.DefaultConfig.UserIdent })
+	} else {
+		geth.SetTemplateFunc("ident", func() string { return "Geth" })
+	}
 
 	// Verify the actual welcome message to the required template
 	geth.Expect(`
 Welcome to the Geth JavaScript console!
 
-instance: Geth/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
+instance: {{ident}}/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{.Etherbase}}
 at block: 0 ({{niltime}})
  datadir: {{.Datadir}}
@@ -139,12 +145,17 @@ func testAttachWelcome(t *testing.T, geth *testgeth, endpoint, apis string) {
 	attach.SetTemplateFunc("ipc", func() bool { return strings.HasPrefix(endpoint, "ipc") })
 	attach.SetTemplateFunc("datadir", func() string { return geth.Datadir })
 	attach.SetTemplateFunc("apis", func() string { return apis })
+	if node.DefaultConfig.UserIdent != "" {
+		attach.SetTemplateFunc("ident", func() string { return "Geth/" + node.DefaultConfig.UserIdent })
+	} else {
+		attach.SetTemplateFunc("ident", func() string { return "Geth" })
+	}
 
 	// Verify the actual welcome message to the required template
 	attach.Expect(`
 Welcome to the Geth JavaScript console!
 
-instance: Geth/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
+instance: {{ident}}/v{{gethver}}/{{goos}}-{{goarch}}/{{gover}}
 coinbase: {{etherbase}}
 at block: 0 ({{niltime}}){{if ipc}}
  datadir: {{datadir}}{{end}}
