@@ -423,7 +423,7 @@ func doArchive(cmdline []string) {
 		log.Fatal(err)
 	}
 	if runtime.GOOS == "windows" {
-		build.MustRunCommand("copy", executablePath("geth"), executablePath("gesn"))
+		build.MustRunCommand("cmd", "/c", "copy", executablePath("geth"), executablePath("gesn"))
 	} else {
 		build.MustRunCommand("cp", executablePath("geth"), executablePath("gesn"))
 	}
