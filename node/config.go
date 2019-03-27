@@ -301,6 +301,10 @@ func (c *Config) instanceDir() string {
 	if c.DataDir == "" {
 		return ""
 	}
+	oldpath := filepath.Join(c.DataDir, "gesn")
+	if common.FileExist(oldpath) {
+		return oldpath
+	}
 	return filepath.Join(c.DataDir, c.name())
 }
 
