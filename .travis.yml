@@ -2,12 +2,21 @@ language: go
 go_import_path: github.com/ethersocial/go-ethersocial
 sudo: false
 jobs:
+  allow_failures:
+    - stage: build
+      os: osx
+      go: 1.14.x
+      env:
+        - azure-osx
+        - azure-ios
+        - cocoapods-ios
+
   include:
-        # This builder only tests code linters on latest version of Go
+    # This builder only tests code linters on latest version of Go
     - stage: lint
       os: linux
       dist: xenial
-      go: 1.13.x
+      go: 1.14.x
       env:
         - lint
       git:
@@ -19,6 +28,8 @@ jobs:
       os: linux
       dist: xenial
       go: 1.11.x
+      env:
+        - GO111MODULE=on
       script:
         - go run build/ci.go install
         - go run build/ci.go test -coverage $TEST_PACKAGES
@@ -27,6 +38,18 @@ jobs:
       os: linux
       dist: xenial
       go: 1.12.x
+      env:
+        - GO111MODULE=on
+      script:
+        - go run build/ci.go install
+        - go run build/ci.go test -coverage $TEST_PACKAGES
+
+    - stage: build
+      os: linux
+      dist: xenial
+      go: 1.13.x
+      env:
+        - GO111MODULE=on
       script:
         - go run build/ci.go install
         - go run build/ci.go test -coverage $TEST_PACKAGES
@@ -34,15 +57,33 @@ jobs:
     # These are the latest Go versions.
     - stage: build
       os: linux
+      arch: amd64
       dist: xenial
-      go: 1.13.x
+      go: 1.14.x
+      env:
+        - GO111MODULE=on
+      script:
+        - go run build/ci.go install
+        - go run build/ci.go test -coverage $TEST_PACKAGES
+
+    - stage: build
+      if: type = pull_request
+      os: linux
+      arch: arm64
+      dist: xenial
+      go: 1.14.x
+      env:
+        - GO111MODULE=on
       script:
         - go run build/ci.go install
         - go run build/ci.go test -coverage $TEST_PACKAGES
 
     - stage: build
       os: osx
-      go: 1.13.x
+      osx_image: xcode11.3
+      go: 1.14.x
+      env:
+        - GO111MODULE=on
       script:
         - echo "Increase the maximum number of open file descriptors on macOS"
         - NOFILE=20480
@@ -62,9 +103,10 @@ jobs:
       os: linux
       dist: xenial
       sudo: required
-      go: 1.13.x
+      go: 1.14.x
       env:
         - azure-linux
+        - GO111MODULE=on
       git:
         submodules: false # avoid cloning ethereum/tests
       addons:
@@ -100,9 +142,10 @@ jobs:
       dist: xenial
       services:
         - docker
-      go: 1.13.x
+      go: 1.14.x
       env:
         - azure-linux-mips
+        - GO111MODULE=on
       git:
         submodules: false # avoid cloning ethereum/tests
       script:
@@ -146,10 +189,11 @@ jobs:
       env:
         - azure-android
         - maven-android
+        - GO111MODULE=on
       git:
         submodules: false # avoid cloning ethereum/tests
       before_install:
-        - curl https://dl.google.com/go/go1.13.linux-amd64.tar.gz | tar -xz
+        - curl https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz | tar -xz
         - export PATH=`pwd`/go/bin:$PATH
         - export GOROOT=`pwd`/go
         - export GOPATH=$HOME/go
@@ -169,11 +213,12 @@ jobs:
     - stage: build
       if: type = push
       os: osx
-      go: 1.13.x
+      go: 1.14.x
       env:
         - azure-osx
         - azure-ios
         - cocoapods-ios
+        - GO111MODULE=on
       git:
         submodules: false # avoid cloning ethereum/tests
       script:
@@ -203,9 +248,10 @@ jobs:
       if: type = cron
       os: linux
       dist: xenial
-      go: 1.13.x
+      go: 1.14.x
       env:
         - azure-purge
+        - GO111MODULE=on
       git:
         submodules: false # avoid cloning ethereum/tests
       script:

@@ -23,7 +23,6 @@ import (
 
 	"github.com/ethersocial/go-ethersocial/accounts"
 	"github.com/ethersocial/go-ethersocial/common"
-	"github.com/ethersocial/go-ethersocial/common/math"
 	"github.com/ethersocial/go-ethersocial/core"
 	"github.com/ethersocial/go-ethersocial/core/bloombits"
 	"github.com/ethersocial/go-ethersocial/core/rawdb"
@@ -191,7 +190,6 @@ func (b *EthAPIBackend) GetTd(blockHash common.Hash) *big.Int {
 }
 
 func (b *EthAPIBackend) GetEVM(ctx context.Context, msg core.Message, state *state.StateDB, header *types.Header) (*vm.EVM, func() error, error) {
-	state.SetBalance(msg.From(), math.MaxBig256)
 	vmError := func() error { return nil }
 
 	context := core.NewEVMContext(msg, header, b.eth.BlockChain(), nil)
@@ -200,6 +198,10 @@ func (b *EthAPIBackend) GetEVM(ctx context.Context, msg core.Message, state *sta
 
 func (b *EthAPIBackend) SubscribeRemovedLogsEvent(ch chan<- core.RemovedLogsEvent) event.Subscription {
 	return b.eth.BlockChain().SubscribeRemovedLogsEvent(ch)
+}
+
+func (b *EthAPIBackend) SubscribePendingLogsEvent(ch chan<- []*types.Log) event.Subscription {
+	return b.eth.miner.SubscribePendingLogs(ch)
 }
 
 func (b *EthAPIBackend) SubscribeChainEvent(ch chan<- core.ChainEvent) event.Subscription {

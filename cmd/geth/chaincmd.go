@@ -36,6 +36,7 @@ import (
 	"github.com/ethersocial/go-ethersocial/eth/downloader"
 	"github.com/ethersocial/go-ethersocial/event"
 	"github.com/ethersocial/go-ethersocial/log"
+	"github.com/ethersocial/go-ethersocial/metrics"
 	"github.com/ethersocial/go-ethersocial/trie"
 	"gopkg.in/urfave/cli.v1"
 )
@@ -57,6 +58,18 @@ participating.
 
 It expects the genesis file as argument.`,
 	}
+	dumpGenesisCommand = cli.Command{
+		Action:    utils.MigrateFlags(dumpGenesis),
+		Name:      "dumpgenesis",
+		Usage:     "Dumps genesis block JSON configuration to stdout",
+		ArgsUsage: "",
+		Flags: []cli.Flag{
+			utils.DataDirFlag,
+		},
+		Category: "BLOCKCHAIN COMMANDS",
+		Description: `
+The dumpgenesis command dumps the genesis block configuration in JSON format to stdout.`,
+	}
 	importCommand = cli.Command{
 		Action:    utils.MigrateFlags(importChain),
 		Name:      "import",
@@ -67,8 +80,18 @@ It expects the genesis file as argument.`,
 			utils.CacheFlag,
 			utils.SyncModeFlag,
 			utils.GCModeFlag,
+			utils.SnapshotFlag,
 			utils.CacheDatabaseFlag,
 			utils.CacheGCFlag,
+			utils.MetricsEnabledFlag,
+			utils.MetricsEnabledExpensiveFlag,
+			utils.MetricsEnableInfluxDBFlag,
+			utils.MetricsInfluxDBEndpointFlag,
+			utils.MetricsInfluxDBDatabaseFlag,
+			utils.MetricsInfluxDBUsernameFlag,
+			utils.MetricsInfluxDBPasswordFlag,
+			utils.MetricsInfluxDBTagsFlag,
+			utils.TxLookupLimitFlag,
 		},
 		Category: "BLOCKCHAIN COMMANDS",
 		Description: `
@@ -134,9 +157,12 @@ The export-preimages command export hash preimages to an RLP encoded stream`,
 			utils.CacheFlag,
 			utils.SyncModeFlag,
 			utils.FakePoWFlag,
-			utils.TestnetFlag,
+			utils.RopstenFlag,
 			utils.SkynetFlag,
 			utils.RinkebyFlag,
+			utils.TxLookupLimitFlag,
+			utils.GoerliFlag,
+			utils.LegacyTestnetFlag,
 		},
 		Category: "BLOCKCHAIN COMMANDS",
 		Description: `
@@ -182,9 +208,10 @@ Use "ethereum dump 0" to dump the genesis block.`,
 			utils.DataDirFlag,
 			utils.AncientFlag,
 			utils.CacheFlag,
-			utils.TestnetFlag,
+			utils.RopstenFlag,
 			utils.RinkebyFlag,
 			utils.GoerliFlag,
+			utils.LegacyTestnetFlag,
 			utils.SyncModeFlag,
 		},
 		Category: "BLOCKCHAIN COMMANDS",
@@ -228,14 +255,29 @@ func initGenesis(ctx *cli.Context) error {
 	return nil
 }
 
+func dumpGenesis(ctx *cli.Context) error {
+	genesis := utils.MakeGenesis(ctx)
+	if genesis == nil {
+		genesis = core.DefaultGenesisBlock()
+	}
+	if err := json.NewEncoder(os.Stdout).Encode(genesis); err != nil {
+		utils.Fatalf("could not encode genesis")
+	}
+	return nil
+}
+
 func importChain(ctx *cli.Context) error {
 	if len(ctx.Args()) < 1 {
 		utils.Fatalf("This command requires an argument.")
 	}
+	// Start metrics export if enabled
+	utils.SetupMetrics(ctx)
+	// Start system runtime metrics collection
+	go metrics.CollectProcessMetrics(3 * time.Second)
 	stack := makeFullNode(ctx)
 	defer stack.Close()
 
-	chain, db := utils.MakeChain(ctx, stack)
+	chain, db := utils.MakeChain(ctx, stack, false)
 	defer db.Close()
 
 	// Start periodically gathering memory profiles
@@ -325,7 +367,7 @@ func exportChain(ctx *cli.Context) error {
 	stack := makeFullNode(ctx)
 	defer stack.Close()
 
-	chain, _ := utils.MakeChain(ctx, stack)
+	chain, _ := utils.MakeChain(ctx, stack, true)
 	start := time.Now()
 
 	var err error
@@ -400,7 +442,7 @@ func copyDb(ctx *cli.Context) error {
 	stack := makeFullNode(ctx)
 	defer stack.Close()
 
-	chain, chainDb := utils.MakeChain(ctx, stack)
+	chain, chainDb := utils.MakeChain(ctx, stack, false)
 	syncMode := *utils.GlobalTextMarshaler(ctx, utils.SyncModeFlag.Name).(*downloader.SyncMode)
 
 	var syncBloom *trie.SyncBloom
@@ -508,7 +550,7 @@ func dump(ctx *cli.Context) error {
 	stack := makeFullNode(ctx)
 	defer stack.Close()
 
-	chain, chainDb := utils.MakeChain(ctx, stack)
+	chain, chainDb := utils.MakeChain(ctx, stack, true)
 	defer chainDb.Close()
 	for _, arg := range ctx.Args() {
 		var block *types.Block
@@ -522,7 +564,7 @@ func dump(ctx *cli.Context) error {
 			fmt.Println("{}")
 			utils.Fatalf("block not found")
 		} else {
-			state, err := state.New(block.Root(), state.NewDatabase(chainDb))
+			state, err := state.New(block.Root(), state.NewDatabase(chainDb), nil)
 			if err != nil {
 				utils.Fatalf("could not create new state: %v", err)
 			}
@@ -547,7 +589,7 @@ func inspect(ctx *cli.Context) error {
 	node, _ := makeConfigNode(ctx)
 	defer node.Close()
 
-	_, chainDb := utils.MakeChain(ctx, node)
+	_, chainDb := utils.MakeChain(ctx, node, true)
 	defer chainDb.Close()
 
 	return rawdb.InspectDatabase(chainDb)

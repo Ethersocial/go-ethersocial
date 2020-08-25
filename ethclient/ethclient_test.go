@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethersocial/go-ethersocial"
+	ethereum "github.com/ethersocial/go-ethersocial"
 	"github.com/ethersocial/go-ethersocial/common"
 	"github.com/ethersocial/go-ethersocial/consensus/ethash"
 	"github.com/ethersocial/go-ethersocial/core"

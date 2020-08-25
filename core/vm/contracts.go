@@ -28,6 +28,8 @@ import (
 	"github.com/ethersocial/go-ethersocial/crypto/blake2b"
 	"github.com/ethersocial/go-ethersocial/crypto/bn256"
 	"github.com/ethersocial/go-ethersocial/params"
+
+	//lint:ignore SA1019 Needed for precompile
 	"golang.org/x/crypto/ripemd160"
 )
 

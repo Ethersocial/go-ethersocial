@@ -37,6 +37,7 @@ import (
 
 	"github.com/ethersocial/go-ethersocial/cmd/utils"
 	"github.com/ethersocial/go-ethersocial/common"
+	"github.com/ethersocial/go-ethersocial/common/hexutil"
 	"github.com/ethersocial/go-ethersocial/console"
 	"github.com/ethersocial/go-ethersocial/crypto"
 	"github.com/ethersocial/go-ethersocial/log"
@@ -165,7 +166,7 @@ func echo() {
 	fmt.Printf("pow = %f \n", *argPoW)
 	fmt.Printf("mspow = %f \n", *argServerPoW)
 	fmt.Printf("ip = %s \n", *argIP)
-	fmt.Printf("pub = %s \n", common.ToHex(crypto.FromECDSAPub(pub)))
+	fmt.Printf("pub = %s \n", hexutil.Encode(crypto.FromECDSAPub(pub)))
 	fmt.Printf("idfile = %s \n", *argIDFile)
 	fmt.Printf("dbpath = %s \n", *argDBPath)
 	fmt.Printf("boot = %s \n", *argEnode)
@@ -298,7 +299,7 @@ func startServer() error {
 		return err
 	}
 
-	fmt.Printf("my public key: %s \n", common.ToHex(crypto.FromECDSAPub(&asymKey.PublicKey)))
+	fmt.Printf("my public key: %s \n", hexutil.Encode(crypto.FromECDSAPub(&asymKey.PublicKey)))
 	fmt.Println(server.NodeInfo().Enode)
 
 	if *bootstrapMode {
@@ -598,6 +599,7 @@ func messageLoop() {
 	}
 
 	ticker := time.NewTicker(time.Millisecond * 50)
+	defer ticker.Stop()
 
 	for {
 		select {

@@ -27,6 +27,7 @@ import (
 	"github.com/ethersocial/go-ethersocial/core/types"
 	"github.com/ethersocial/go-ethersocial/eth"
 	"github.com/ethersocial/go-ethersocial/ethdb"
+	"github.com/ethersocial/go-ethersocial/les/checkpointoracle"
 	"github.com/ethersocial/go-ethersocial/light"
 	"github.com/ethersocial/go-ethersocial/p2p"
 	"github.com/ethersocial/go-ethersocial/p2p/discv5"
@@ -60,10 +61,9 @@ type lesCommons struct {
 	chainConfig                  *params.ChainConfig
 	iConfig                      *light.IndexerConfig
 	chainDb                      ethdb.Database
-	peers                        *peerSet
 	chainReader                  chainReader
 	chtIndexer, bloomTrieIndexer *core.ChainIndexer
-	oracle                       *checkpointOracle
+	oracle                       *checkpointoracle.CheckpointOracle
 
 	closeCh chan struct{}
 	wg      sync.WaitGroup

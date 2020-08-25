@@ -19,7 +19,7 @@ package shhclient
 import (
 	"context"
 
-	"github.com/ethersocial/go-ethersocial"
+	ethereum "github.com/ethersocial/go-ethersocial"
 	"github.com/ethersocial/go-ethersocial/common/hexutil"
 	"github.com/ethersocial/go-ethersocial/rpc"
 	whisper "github.com/ethersocial/go-ethersocial/whisper/whisperv6"

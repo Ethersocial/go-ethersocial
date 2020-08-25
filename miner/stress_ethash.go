@@ -38,6 +38,7 @@ import (
 	"github.com/ethersocial/go-ethersocial/eth"
 	"github.com/ethersocial/go-ethersocial/eth/downloader"
 	"github.com/ethersocial/go-ethersocial/log"
+	"github.com/ethersocial/go-ethersocial/miner"
 	"github.com/ethersocial/go-ethersocial/node"
 	"github.com/ethersocial/go-ethersocial/p2p"
 	"github.com/ethersocial/go-ethersocial/p2p/enode"
@@ -132,7 +133,7 @@ func main() {
 // makeGenesis creates a custom Ethash genesis block based on some pre-defined
 // faucet accounts.
 func makeGenesis(faucets []*ecdsa.PrivateKey) *core.Genesis {
-	genesis := core.DefaultTestnetGenesisBlock()
+	genesis := core.DefaultRopstenGenesisBlock()
 	genesis.Difficulty = params.MinimumDifficulty
 	genesis.GasLimit = 25000000
 
@@ -179,7 +180,7 @@ func makeMiner(genesis *core.Genesis) (*node.Node, error) {
 			TxPool:          core.DefaultTxPoolConfig,
 			GPO:             eth.DefaultConfig.GPO,
 			Ethash:          eth.DefaultConfig.Ethash,
-			Miner: Config{
+			Miner: miner.Config{
 				GasFloor: genesis.GasLimit * 9 / 10,
 				GasCeil:  genesis.GasLimit * 11 / 10,
 				GasPrice: big.NewInt(1),
