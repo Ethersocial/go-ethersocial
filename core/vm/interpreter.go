@@ -106,6 +106,10 @@ func NewEVMInterpreter(evm *EVM, cfg Config) *EVMInterpreter {
 			jt = constantinopleInstructionSet
 		case evm.chainRules.IsByzantium:
 			jt = byzantiumInstructionSet
+			if !evm.chainRules.IsEIP158 {
+				// check EIP158
+				jt[EXP].dynamicGas = gasExpFrontier
+			}
 		case evm.chainRules.IsEIP158:
 			jt = spuriousDragonInstructionSet
 		case evm.chainRules.IsEIP150:
